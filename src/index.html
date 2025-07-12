@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PoE Currency Exchange Calculator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="calculator">
+            <div class="left-section">
+                <div class="ratio-inputs">
+                    <input type="number" id="leftNum1" placeholder="30" step="any">
+                    <span class="separator">:</span>
+                    <input type="number" id="leftNum2" placeholder="2" step="any">
+                </div>
+                <label class="section-label">Currency Amount</label>
+            </div>
+
+            <div class="center-display">
+                <div class="market-ratio">
+                    <span id="ratioDisplay">15 : 1</span>
+                </div>
+                <label class="ratio-label">Market Ratio</label>
+            </div>
+
+            <div class="right-section">
+                <div class="ratio-inputs">
+                    <input type="number" id="rightNum1" placeholder="15" step="any" readonly>
+                    <span class="separator">:</span>
+                    <input type="number" id="rightNum2" placeholder="1" step="any" readonly>
+                </div>
+                <label class="section-label">Simplified Ratio</label>
+            </div>
+        </div>
+
+        <div class="button-container">
+            <button id="clearBtn">Clear All</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
