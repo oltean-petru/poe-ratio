@@ -1,134 +1,72 @@
-const { app, BrowserWindow, Menu } = require('electron');
-const path = require('path');
+const { app, BrowserWindow, globalShortcut } = require('electron');
 
 let mainWindow;
+let isVisible = false;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 1000,
-    height: 700,
-    minWidth: 800,
-    minHeight: 600,
+    width: 800,
+    height: 400,
+    frame: false,
+    alwaysOnTop: true,
+    skipTaskbar: true,
+    resizable: true,
+    transparent: true,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
       enableRemoteModule: false
     },
-    icon: path.join(__dirname, 'assets/icon.png'),
-    show: false,
-    titleBarStyle: 'default'
+    show: false
   });
 
   mainWindow.loadFile('src/index.html');
-  mainWindow.once('ready-to-show', () => {
-    mainWindow.show();
-  });
+  mainWindow.center();
 
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
 
-  createMenu();
+  globalShortcut.register('CommandOrControl+Shift+R', () => {
+    toggleOverlay();
+  });
+  mainWindow.setMovable(true);
 }
 
-function createMenu() {
-  const template = [
-    {
-      label: 'File',
-      submenu: [
-        {
-          label: 'Clear All',
-          accelerator: 'CmdOrCtrl+R',
-          click: () => {
-            mainWindow.reload();
-          }
-        },
-        { type: 'separator' },
-        {
-          label: 'Quit',
-          accelerator: process.platform === 'darwin' ? 'Cmd+Q' : 'Ctrl+Q',
-          click: () => {
-            app.quit();
-          }
-        }
-      ]
-    },
-    {
-      label: 'Edit',
-      submenu: [
-        { role: 'undo' },
-        { role: 'redo' },
-        { type: 'separator' },
-        { role: 'cut' },
-        { role: 'copy' },
-        { role: 'paste' },
-        { role: 'selectall' }
-      ]
-    },
-    {
-      label: 'View',
-      submenu: [
-        { role: 'reload' },
-        { role: 'forceReload' },
-        { role: 'toggleDevTools' },
-        { type: 'separator' },
-        { role: 'resetZoom' },
-        { role: 'zoomIn' },
-        { role: 'zoomOut' },
-        { type: 'separator' },
-        { role: 'togglefullscreen' }
-      ]
-    },
-    {
-      label: 'Window',
-      submenu: [
-        { role: 'minimize' },
-        { role: 'close' }
-      ]
-    }
-  ];
-
-  if (process.platform === 'darwin') {
-    template.unshift({
-      label: app.getName(),
-      submenu: [
-        { role: 'about' },
-        { type: 'separator' },
-        { role: 'services' },
-        { type: 'separator' },
-        { role: 'hide' },
-        { role: 'hideOthers' },
-        { role: 'unhide' },
-        { type: 'separator' },
-        { role: 'quit' }
-      ]
-    });
-
-    template[4].submenu = [
-      { role: 'close' },
-      { role: 'minimize' },
-      { role: 'zoom' },
-      { type: 'separator' },
-      { role: 'front' }
-    ];
+function toggleOverlay() {
+  if (isVisible) {
+    mainWindow.hide();
+    isVisible = false;
+  } else {
+    mainWindow.show();
+    mainWindow.focus();
+    isVisible = true;
   }
-
-  const menu = Menu.buildFromTemplate(template);
-  Menu.setApplicationMenu(menu);
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  createWindow();
+
+  // Show overlay by default
+  setTimeout(() => {
+    toggleOverlay();
+  }, 500);
+});
 
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
+  // Keep app running even when window is closed for overlay functionality
+  // Uncomment the next line if you want the app to quit when window is closed
+  // app.quit();
 });
 
 app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow();
   }
+});
+
+app.on('will-quit', () => {
+  globalShortcut.unregisterAll();
 });
 
 app.on('web-contents-created', (event, contents) => {
