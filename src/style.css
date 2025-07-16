@@ -143,8 +143,8 @@ input[readonly]:focus {
 
 .clear-icon-btn {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 5px;
+  right: 5px;
   background: linear-gradient(145deg, #4a4a4a, #3a3a3a);
   color: #c9aa71;
   border: 2px solid #c9aa71;
@@ -279,8 +279,8 @@ input[readonly]:focus {
 }
 
 .ratio-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(55px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 8px;
 }
 
@@ -301,6 +301,8 @@ input[readonly]:focus {
   align-items: center;
   justify-content: center;
   min-height: 32px;
+  width: fit-content;
+  flex-shrink: 0;
 }
 
 .quick-ratio-btn:hover {
