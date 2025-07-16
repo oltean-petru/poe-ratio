@@ -7,54 +7,48 @@ const clearBtn = document.getElementById('clearBtn');
 
 let isUpdating = false;
 
-function gcd(a, b) {
-    const factor = Math.pow(10, Math.max(
-        (a.toString().split('.')[1] || '').length,
-        (b.toString().split('.')[1] || '').length
-    ));
-
-    const intA = Math.round(a * factor);
-    const intB = Math.round(b * factor);
-
-    function euclideanGCD(x, y) {
-        while (y !== 0) {
-            const temp = y;
-            y = x % y;
-            x = temp;
-        }
-        return x;
-    }
-
-    return euclideanGCD(intA, intB) / factor;
-}
-
 function simplifyRatio(num1, num2) {
     if (num1 <= 0 || num2 <= 0) {
         throw new Error('Numbers must be positive');
     }
+    const str1 = num1.toString();
+    const str2 = num2.toString();
 
-    const divisor = gcd(num1, num2);
+    const decimals1 = (str1.split('.')[1] || '').length;
+    const decimals2 = (str2.split('.')[1] || '').length;
+    const maxDecimals = Math.max(decimals1, decimals2);
 
-    let simplified1 = num1 / divisor;
-    let simplified2 = num2 / divisor;
+    const precision = Math.min(maxDecimals, 6);
+    const multiplier = Math.pow(10, precision);
 
-    const factor1 = (simplified1.toString().split('.')[1] || '').length;
-    const factor2 = (simplified2.toString().split('.')[1] || '').length;
-    const maxFactor = Math.max(factor1, factor2);
+    let int1 = Math.round(num1 * multiplier);
+    let int2 = Math.round(num2 * multiplier);
+    function simpleGCD(a, b) {
+        while (b !== 0) {
+            const temp = b;
+            b = a % b;
+            a = temp;
+        }
+        return a;
+    }
 
-    if (maxFactor > 0) {
-        const multiplier = Math.pow(10, maxFactor);
-        simplified1 *= multiplier;
-        simplified2 *= multiplier;
+    const divisor = simpleGCD(int1, int2);
 
-        const finalGCD = gcd(simplified1, simplified2);
-        simplified1 /= finalGCD;
-        simplified2 /= finalGCD;
+    const simplified1 = int1 / divisor;
+    const simplified2 = int2 / divisor;
+    if (simplified1 > 10000 || simplified2 > 10000) {
+        const maxVal = Math.max(simplified1, simplified2);
+        const scaleFactor = Math.ceil(maxVal / 1000);
+
+        return {
+            first: Math.round(simplified1 / scaleFactor),
+            second: Math.round(simplified2 / scaleFactor)
+        };
     }
 
     return {
-        first: Math.round(simplified1),
-        second: Math.round(simplified2)
+        first: simplified1,
+        second: simplified2
     };
 }
 
