@@ -5,13 +5,13 @@ let isVisible = false;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 800,
-    height: 400,
+    width: 700,
+    height: 180,
     frame: false,
     alwaysOnTop: true,
     skipTaskbar: true,
-    resizable: true,
-    transparent: true,
+    resizable: false,
+    transparent: false,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -21,6 +21,20 @@ function createWindow() {
   });
 
   mainWindow.loadFile('src/index.html');
+
+  // Auto-resize window to content after loading
+  mainWindow.webContents.once('did-finish-load', () => {
+    mainWindow.webContents.executeJavaScript(`
+      ({
+        width: document.body.scrollWidth,
+        height: document.body.scrollHeight
+      })
+    `).then((size) => {
+      mainWindow.setSize(size.width + 20, size.height);
+      mainWindow.center();
+    });
+  });
+
   mainWindow.center();
 
   mainWindow.on('closed', () => {

@@ -1,210 +1,220 @@
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: transparent;
-    margin: 0;
-    padding: 5px;
-    overflow: hidden;
-    -webkit-app-region: drag;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: transparent;
+  margin: 0;
+  padding: 5px;
+  overflow: hidden;
+  -webkit-app-region: drag;
 }
 
 .container {
-    background: linear-gradient(145deg, #2a2a2a, #1f1f1f);
-    border: 2px solid #c9aa71;
-    border-radius: 12px;
-    padding: 15px;
-    box-shadow:
-        0 0 30px rgba(201, 170, 113, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    width: 100%;
-    -webkit-app-region: no-drag;
-    backdrop-filter: blur(10px);
-    position: relative;
-}
-
-.description {
-    text-align: center;
-    color: #888;
-    margin-bottom: 40px;
-    font-size: 1.1rem;
+  background: linear-gradient(145deg, #2a2a2a, #1f1f1f);
+  border: 2px solid #c9aa71;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 0 30px rgba(201, 170, 113, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  width: 100%;
+  -webkit-app-region: no-drag;
+  backdrop-filter: blur(10px);
+  position: relative;
 }
 
 .calculator {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 15px;
-    margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 15px;
+  position: relative;
 }
 
-.left-section,
+.left-section {
+  margin-left: 20px;
+  flex: 1;
+  text-align: left;
+}
+
 .right-section {
-    flex: 1;
-    text-align: center;
+  margin-right: 20px;
+  flex: 1;
+  text-align: right;
 }
 
 .center-display {
-    flex-shrink: 0;
-    text-align: center;
-    padding: 0 10px;
-    width: fit-content;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  padding: 0 10px;
+  width: auto;
+  min-width: 120px;
+  z-index: 1;
 }
 
 .market-ratio {
-    background: linear-gradient(145deg, #3a3a3a, #2a2a2a);
-    border: 2px solid #c9aa71;
-    border-radius: 8px;
-    padding: 10px 15px;
-    margin-bottom: 8px;
+  background: linear-gradient(145deg, #3a3a3a, #2a2a2a);
+  border: 2px solid #c9aa71;
+  border-radius: 8px;
+  padding: 10px 15px;
+  margin-bottom: 8px;
 }
 
 .market-ratio span {
-    color: #c9aa71;
-    font-size: 1.1rem;
-    font-weight: bold;
-    text-shadow: 0 0 5px rgba(201, 170, 113, 0.5);
+  color: #c9aa71;
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-shadow: 0 0 5px rgba(201, 170, 113, 0.5);
 }
 
 .ratio-label,
 .section-label {
-    color: #888;
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+  color: #888;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .ratio-inputs {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.left-section .ratio-inputs {
+  justify-content: flex-start;
+}
+
+.right-section .ratio-inputs {
+  justify-content: flex-end;
 }
 
 input[type="number"] {
-    width: 85px;
-    padding: 10px;
-    background: linear-gradient(145deg, #3a3a3a, #2a2a2a);
-    border: 2px solid #444;
-    border-radius: 6px;
-    color: #fff;
-    font-size: 1rem;
-    text-align: center;
-    transition: all 0.3s ease;
-    -webkit-app-region: no-drag;
+  width: 100px;
+  padding: 10px;
+  background: linear-gradient(145deg, #3a3a3a, #2a2a2a);
+  border: 2px solid #444;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 1rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  -webkit-app-region: no-drag;
 }
 
 input[type="number"]:focus {
-    outline: none;
-    border-color: #c9aa71;
-    box-shadow: 0 0 15px rgba(201, 170, 113, 0.4);
+  outline: none;
+  border-color: #c9aa71;
+  box-shadow: 0 0 15px rgba(201, 170, 113, 0.4);
 }
 
 input[readonly] {
-    background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
-    color: #888;
-    cursor: pointer;
-    border-color: #333;
-    transition: all 0.2s ease;
+  background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
+  color: #888;
+  cursor: pointer;
+  border-color: #333;
+  transition: all 0.2s ease;
 }
 
 input[readonly]:hover {
-    border-color: #c9aa71;
-    box-shadow: 0 0 10px rgba(201, 170, 113, 0.3);
-    color: #aaa;
+  border-color: #c9aa71;
+  box-shadow: 0 0 10px rgba(201, 170, 113, 0.3);
+  color: #aaa;
 }
 
 input[readonly]:focus {
-    border-color: #444;
-    box-shadow: none;
+  border-color: #444;
+  box-shadow: none;
 }
 
 .separator {
-    font-size: 1.6rem;
-    font-weight: bold;
-    color: #c9aa71;
-    text-shadow: 0 0 5px rgba(201, 170, 113, 0.5);
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #c9aa71;
+  text-shadow: 0 0 5px rgba(201, 170, 113, 0.5);
 }
 
 .clear-icon-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: linear-gradient(145deg, #4a4a4a, #3a3a3a);
-    color: #c9aa71;
-    border: 2px solid #c9aa71;
-    border-radius: 50%;
-    width: 28px;
-    height: 28px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    -webkit-app-region: no-drag;
-    padding: 0;
-    z-index: 10;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: linear-gradient(145deg, #4a4a4a, #3a3a3a);
+  color: #c9aa71;
+  border: 2px solid #c9aa71;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-app-region: no-drag;
+  padding: 0;
+  z-index: 10;
 }
 
 .clear-icon-btn svg {
-    width: 14px;
-    height: 14px;
+  width: 14px;
+  height: 14px;
 }
 
 .clear-icon-btn:hover {
-    background: linear-gradient(145deg, #c9aa71, #b8994a);
-    color: #1a1a1a;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(201, 170, 113, 0.4);
+  background: linear-gradient(145deg, #c9aa71, #b8994a);
+  color: #1a1a1a;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(201, 170, 113, 0.4);
 }
 
 .quick-ratios {
-    margin-top: 20px;
-    padding: 15px;
-    background: linear-gradient(145deg, #252525, #1a1a1a);
-    border: 1px solid #444;
-    border-radius: 8px;
+  margin-top: 20px;
+  padding: 15px;
+  background: linear-gradient(145deg, #252525, #1a1a1a);
+  border: 1px solid #444;
+  border-radius: 8px;
 }
 
 .quick-ratios-title {
-    color: #c9aa71;
-    font-size: 0.9rem;
-    text-align: center;
-    margin-bottom: 12px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-weight: 600;
+  color: #c9aa71;
+  font-size: 0.9rem;
+  text-align: center;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
 }
 
 .ratio-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(55px, 1fr));
-    gap: 8px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(55px, 1fr));
+  gap: 8px;
 }
 
 .quick-ratio-btn {
-    background: linear-gradient(145deg, #3a3a3a, #2a2a2a);
-    color: #c9aa71;
-    border: 1px solid #555;
-    border-radius: 5px;
-    padding: 6px 10px;
-    font-size: 0.85rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    text-align: center;
-    font-weight: 500;
-    -webkit-app-region: no-drag;
+  background: linear-gradient(145deg, #3a3a3a, #2a2a2a);
+  color: #c9aa71;
+  border: 1px solid #555;
+  border-radius: 5px;
+  padding: 6px 10px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  font-weight: 500;
+  -webkit-app-region: no-drag;
 }
 
 .quick-ratio-btn:hover {
-    background: linear-gradient(145deg, #c9aa71, #b8994a);
-    color: #1a1a1a;
-    border-color: #c9aa71;
-    transform: translateY(-1px);
-    box-shadow: 0 3px 10px rgba(201, 170, 113, 0.3);
+  background: linear-gradient(145deg, #c9aa71, #b8994a);
+  color: #1a1a1a;
+  border-color: #c9aa71;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(201, 170, 113, 0.3);
 }
