@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Custom Ratio</title>
+    <link rel="stylesheet" href="add-ratio.css">
+</head>
+<body>
+    <div class="form-container">
+        <h3 class="form-title">Add Custom Ratio</h3>
+        <form id="addRatioForm" class="add-ratio-form">
+            <label for="ratioInput">Ratio</label>
+            <input type="text" id="ratioInput" placeholder="15:1" maxlength="10" required>
+
+            <label for="labelInput">Label (optional)</label>
+            <input type="text" id="labelInput" placeholder="Label" maxlength="20">
+
+            <div class="form-buttons">
+                <button type="button" id="cancelBtn" class="cancel-btn">Cancel</button>
+                <button type="submit" id="saveBtn" class="save-btn">Save</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="add-ratio.js"></script>
+</body>
+</html>

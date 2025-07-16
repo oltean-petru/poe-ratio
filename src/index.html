@@ -10,7 +10,7 @@
     <div class="container">
         <div class="calculator">
             <div class="left-section">
-                <div class="ratio-input lefts">
+                <div class="ratio-inputs">
                     <input type="number" id="leftNum1" placeholder="30" step="any">
                     <span class="separator">:</span>
                     <input type="number" id="leftNum2" placeholder="2" step="any">
@@ -20,13 +20,13 @@
 
             <div class="center-display">
                 <div class="market-ratio">
-                    <span id="ratioDisplay">15 : 1</span>
+                    <span id="ratioDisplay">- : -</span>
                 </div>
                 <label class="ratio-label">Market Ratio</label>
             </div>
 
             <div class="right-section">
-                <div class="ratio-inputs right">
+                <div class="ratio-inputs">
                     <input type="number" id="rightNum1" placeholder="15" step="any" readonly>
                     <span class="separator">:</span>
                     <input type="number" id="rightNum2" placeholder="1" step="any" readonly>
@@ -47,15 +47,7 @@
                 <button id="addRatioBtn" class="add-ratio-btn" title="Add New Ratio">+</button>
             </div>
             <div class="ratio-grid" id="ratioGrid">
-                <!-- custom ratios will be loaded here -->
-            </div>
-            <div id="addRatioForm" class="add-ratio-form" style="display: none;">
-                <input type="text" id="newRatioInput" placeholder="15:1" maxlength="10">
-                <input type="text" id="newRatioLabel" placeholder="Label (optional)" maxlength="20">
-                <div class="form-buttons">
-                    <button id="saveRatioBtn" class="save-btn">Save</button>
-                    <button id="cancelRatioBtn" class="cancel-btn">Cancel</button>
-                </div>
+                <!-- Custom ratios will be loaded here -->
             </div>
         </div>
     </div>

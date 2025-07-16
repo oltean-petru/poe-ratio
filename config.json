@@ -2,7 +2,11 @@
   "customRatios": [
     {
       "ratio": "15:1",
-      "label": "15:1"
+      "label": "default"
+    },
+    {
+      "ratio": "20:6",
+      "label": "20:6"
     }
   ]
 }

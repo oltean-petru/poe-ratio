@@ -1,0 +1,106 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(145deg, #2a2a2a, #1f1f1f);
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  -webkit-app-region: drag;
+}
+
+.form-container {
+  padding: 20px;
+  -webkit-app-region: no-drag;
+}
+
+.form-title {
+  color: #c9aa71;
+  font-size: 1.1rem;
+  text-align: center;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+.add-ratio-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.add-ratio-form label {
+  color: #888;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 5px;
+}
+
+.add-ratio-form input {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(145deg, #3a3a3a, #2a2a2a);
+  border: 2px solid #444;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  -webkit-app-region: no-drag;
+}
+
+.add-ratio-form input:focus {
+  outline: none;
+  border-color: #c9aa71;
+  box-shadow: 0 0 15px rgba(201, 170, 113, 0.4);
+}
+
+.form-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
+
+.save-btn, .cancel-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  -webkit-app-region: no-drag;
+}
+
+.save-btn {
+  background: linear-gradient(145deg, #4a7c59, #3a5e45);
+  color: #fff;
+  border: 2px solid #4a7c59;
+}
+
+.save-btn:hover {
+  background: linear-gradient(145deg, #5a8c69, #4a6e55);
+  border-color: #5a8c69;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(74, 124, 89, 0.4);
+}
+
+.cancel-btn {
+  background: linear-gradient(145deg, #7c4a4a, #5e3a3a);
+  color: #fff;
+  border: 2px solid #7c4a4a;
+}
+
+.cancel-btn:hover {
+  background: linear-gradient(145deg, #8c5a5a, #6e4a4a);
+  border-color: #8c5a5a;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(124, 74, 74, 0.4);
+}

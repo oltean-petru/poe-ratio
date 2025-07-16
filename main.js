@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 let mainWindow;
+let addRatioWindow;
 let isVisible = false;
 const configPath = path.join(__dirname, 'config.json');
 
@@ -44,7 +45,13 @@ ipcMain.handle('save-config', (event, config) => {
 ipcMain.handle('add-custom-ratio', (event, ratio, label) => {
   const config = loadConfig();
   config.customRatios.push({ ratio, label: label || ratio });
-  return saveConfig(config) ? config : null;
+  const success = saveConfig(config);
+
+  if (success && mainWindow) {
+    mainWindow.webContents.send('ratios-updated', config);
+  }
+
+  return success ? config : null;
 });
 
 ipcMain.handle('remove-custom-ratio', (event, index) => {
@@ -56,6 +63,58 @@ ipcMain.handle('remove-custom-ratio', (event, index) => {
   return null;
 });
 
+ipcMain.handle('open-add-ratio-window', () => {
+  createAddRatioWindow();
+});
+
+ipcMain.handle('close-add-ratio-window', () => {
+  if (addRatioWindow) {
+    addRatioWindow.close();
+  }
+});
+
+function createAddRatioWindow() {
+  if (addRatioWindow) {
+    addRatioWindow.focus();
+    return;
+  }
+
+  addRatioWindow = new BrowserWindow({
+    width: 300,
+    height: 420,
+    frame: false,
+    alwaysOnTop: true,
+    parent: mainWindow,
+    modal: true,
+    resizable: false,
+    transparent: false,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      enableRemoteModule: false,
+      preload: path.join(__dirname, 'add-ratio-preload.js')
+    },
+    show: false
+  });  addRatioWindow.loadFile('src/add-ratio.html');
+
+  addRatioWindow.webContents.once('did-finish-load', () => {
+    addRatioWindow.webContents.executeJavaScript(`
+      ({
+        width: document.body.scrollWidth,
+        height: document.body.scrollHeight
+      })
+    `).then((size) => {
+      addRatioWindow.setSize(size.width + 20, size.height + 10);
+      addRatioWindow.center();
+      addRatioWindow.show();
+    });
+  });
+
+  addRatioWindow.on('closed', () => {
+    addRatioWindow = null;
+  });
+}
+
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 700,
@@ -64,7 +123,7 @@ function createWindow() {
     alwaysOnTop: true,
     skipTaskbar: true,
     resizable: false,
-    transparent: false,
+    transparent: true,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -114,7 +173,6 @@ function toggleOverlay() {
 app.whenReady().then(() => {
   createWindow();
 
-  // Show overlay by default
   setTimeout(() => {
     toggleOverlay();
   }, 500);
