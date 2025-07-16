@@ -1,7 +1,6 @@
 const form = document.getElementById('addRatioForm');
 const ratioInput = document.getElementById('ratioInput');
 const labelInput = document.getElementById('labelInput');
-const saveBtn = document.getElementById('saveBtn');
 const cancelBtn = document.getElementById('cancelBtn');
 window.addEventListener('load', () => {
     ratioInput.focus();

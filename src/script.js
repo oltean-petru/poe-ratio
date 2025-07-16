@@ -298,12 +298,6 @@ rightNum2.addEventListener('click', () => handleRightInputClick(rightNum2));
 leftNum1.addEventListener('wheel', handleScrollLeftNum1, { passive: false });
 leftNum2.addEventListener('wheel', handleScrollLeftNum2, { passive: false });
 
-rightNum1.addEventListener('click', () => handleRightInputClick(rightNum1));
-rightNum2.addEventListener('click', () => handleRightInputClick(rightNum2));
-
-leftNum1.addEventListener('wheel', handleScrollLeftNum1, { passive: false });
-leftNum2.addEventListener('wheel', handleScrollLeftNum2, { passive: false });
-
 leftNum1.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') leftNum2.focus();
 });
