@@ -208,6 +208,18 @@ function handleRightInputClick(inputElement) {
 
 clearBtn.addEventListener('click', clearInputs);
 
+document.querySelectorAll('.quick-ratio-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const ratio = btn.dataset.ratio;
+        const [num1, num2] = ratio.split(':').map(n => parseFloat(n));
+
+        leftNum1.value = num1;
+        leftNum2.value = num2;
+
+        setTimeout(calculateFromLeft, 100);
+    });
+});
+
 leftNum1.addEventListener('input', () => {
     if (leftNum1.value && leftNum2.value) {
         setTimeout(calculateFromLeft, 300);
