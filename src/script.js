@@ -4,6 +4,13 @@ const rightNum1 = document.getElementById('rightNum1');
 const rightNum2 = document.getElementById('rightNum2');
 const ratioDisplay = document.getElementById('ratioDisplay');
 const clearBtn = document.getElementById('clearBtn');
+const addRatioBtn = document.getElementById('addRatioBtn');
+const addRatioForm = document.getElementById('addRatioForm');
+const newRatioInput = document.getElementById('newRatioInput');
+const newRatioLabel = document.getElementById('newRatioLabel');
+const saveRatioBtn = document.getElementById('saveRatioBtn');
+const cancelRatioBtn = document.getElementById('cancelRatioBtn');
+const ratioGrid = document.getElementById('ratioGrid');
 
 let isUpdating = false;
 
@@ -207,18 +214,117 @@ function handleRightInputClick(inputElement) {
 }
 
 clearBtn.addEventListener('click', clearInputs);
+async function loadCustomRatios() {
+    try {
+        const config = await window.configAPI.loadConfig();
+        renderCustomRatios(config.customRatios);
+    } catch (error) {
+        console.error('Error loading custom ratios:', error);
+        // dallback to default ratios
+        const defaultRatios = [
+            { ratio: '15:1', label: '15:1' },
+            { ratio: '20:1', label: '20:1' },
+            { ratio: '30:1', label: '30:1' },
+            { ratio: '50:1', label: '50:1' },
+            { ratio: '3:1', label: '3:1' },
+            { ratio: '4:1', label: '4:1' },
+            { ratio: '5:1', label: '5:1' },
+            { ratio: '10:1', label: '10:1' }
+        ];
+        renderCustomRatios(defaultRatios);
+    }
+}
 
-document.querySelectorAll('.quick-ratio-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        const ratio = btn.dataset.ratio;
-        const [num1, num2] = ratio.split(':').map(n => parseFloat(n));
+function renderCustomRatios(ratios) {
+    ratioGrid.innerHTML = '';
+    ratios.forEach((ratioData, index) => {
+        const button = document.createElement('button');
+        button.className = 'quick-ratio-btn';
+        button.dataset.ratio = ratioData.ratio;
+        button.innerHTML = `
+            <span>${ratioData.label}</span>
+            <button class="delete-btn" onclick="removeCustomRatio(${index}, event)">×</button>
+        `;
 
-        leftNum1.value = num1;
-        leftNum2.value = num2;
+        button.addEventListener('click', (e) => {
+            if (!e.target.classList.contains('delete-btn')) {
+                const ratio = button.dataset.ratio;
+                const [num1, num2] = ratio.split(':').map(n => parseFloat(n));
+                leftNum1.value = num1;
+                leftNum2.value = num2;
+                setTimeout(calculateFromLeft, 100);
+            }
+        });
 
-        setTimeout(calculateFromLeft, 100);
+        ratioGrid.appendChild(button);
     });
+}
+
+async function removeCustomRatio(index, event) {
+    event.stopPropagation();
+    try {
+        const config = await window.configAPI.removeCustomRatio(index);
+        if (config) {
+            renderCustomRatios(config.customRatios);
+        }
+    } catch (error) {
+        console.error('Error removing custom ratio:', error);
+    }
+}
+
+function showAddRatioForm() {
+    addRatioForm.style.display = 'block';
+    newRatioInput.focus();
+}
+
+function hideAddRatioForm() {
+    addRatioForm.style.display = 'none';
+    newRatioInput.value = '';
+    newRatioLabel.value = '';
+}
+
+async function saveCustomRatio() {
+    const ratioValue = newRatioInput.value.trim();
+    const labelValue = newRatioLabel.value.trim();
+
+    if (!ratioValue) return;
+
+    // Validate ratio format (e.g., "15:1", "3.5:1")
+    const ratioPattern = /^\d+(\.\d+)?:\d+(\.\d+)?$/;
+    if (!ratioPattern.test(ratioValue)) {
+        alert('Please enter a valid ratio format (e.g., 15:1, 3.5:1)');
+        return;
+    }
+
+    try {
+        const config = await window.configAPI.addCustomRatio(ratioValue, labelValue);
+        if (config) {
+            renderCustomRatios(config.customRatios);
+            hideAddRatioForm();
+        }
+    } catch (error) {
+        console.error('Error saving custom ratio:', error);
+    }
+}
+
+// Event listeners for custom ratios
+addRatioBtn.addEventListener('click', showAddRatioForm);
+cancelRatioBtn.addEventListener('click', hideAddRatioForm);
+saveRatioBtn.addEventListener('click', saveCustomRatio);
+
+newRatioInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        newRatioLabel.focus();
+    }
 });
+
+newRatioLabel.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        saveCustomRatio();
+    }
+});
+
+window.removeCustomRatio = removeCustomRatio;
 
 leftNum1.addEventListener('input', () => {
     if (leftNum1.value && leftNum2.value) {
@@ -265,4 +371,5 @@ inputs.forEach(input => {
 
 window.addEventListener('load', () => {
     leftNum1.focus();
+    loadCustomRatios();
 });

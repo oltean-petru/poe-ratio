@@ -41,17 +41,21 @@
             </svg>
         </button>
 
-        <div class="quick-ratios">
-            <h3 class="quick-ratios-title">Common Ratios</h3>
-            <div class="ratio-grid">
-                <button class="quick-ratio-btn" data-ratio="15:1">15:1</button>
-                <button class="quick-ratio-btn" data-ratio="20:1">20:1</button>
-                <button class="quick-ratio-btn" data-ratio="30:1">30:1</button>
-                <button class="quick-ratio-btn" data-ratio="50:1">50:1</button>
-                <button class="quick-ratio-btn" data-ratio="3:1">3:1</button>
-                <button class="quick-ratio-btn" data-ratio="4:1">4:1</button>
-                <button class="quick-ratio-btn" data-ratio="5:1">5:1</button>
-                <button class="quick-ratio-btn" data-ratio="10:1">10:1</button>
+        <div class="custom-ratios">
+            <div class="custom-ratios-header">
+                <h3 class="custom-ratios-title">Custom Ratios</h3>
+                <button id="addRatioBtn" class="add-ratio-btn" title="Add New Ratio">+</button>
+            </div>
+            <div class="ratio-grid" id="ratioGrid">
+                <!-- custom ratios will be loaded here -->
+            </div>
+            <div id="addRatioForm" class="add-ratio-form" style="display: none;">
+                <input type="text" id="newRatioInput" placeholder="15:1" maxlength="10">
+                <input type="text" id="newRatioLabel" placeholder="Label (optional)" maxlength="20">
+                <div class="form-buttons">
+                    <button id="saveRatioBtn" class="save-btn">Save</button>
+                    <button id="cancelRatioBtn" class="cancel-btn">Cancel</button>
+                </div>
             </div>
         </div>
     </div>

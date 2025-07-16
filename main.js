@@ -1,7 +1,60 @@
-const { app, BrowserWindow, globalShortcut } = require('electron');
+const { app, BrowserWindow, globalShortcut, ipcMain } = require('electron');
+const fs = require('fs');
+const path = require('path');
 
 let mainWindow;
 let isVisible = false;
+const configPath = path.join(__dirname, 'config.json');
+
+const defaultRatios = [
+  { ratio: '3:1', label: '3:1' },
+  { ratio: '4:1', label: '4:1' },
+  { ratio: '5:1', label: '5:1' },
+];
+function loadConfig() {
+  try {
+    if (fs.existsSync(configPath)) {
+      const data = fs.readFileSync(configPath, 'utf8');
+      return JSON.parse(data);
+    }
+  } catch (error) {
+    console.log('Error loading config, using defaults:', error);
+  }
+  return { customRatios: defaultRatios };
+}
+
+function saveConfig(config) {
+  try {
+    fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+    return true;
+  } catch (error) {
+    console.error('Error saving config:', error);
+    return false;
+  }
+}
+
+ipcMain.handle('load-config', () => {
+  return loadConfig();
+});
+
+ipcMain.handle('save-config', (event, config) => {
+  return saveConfig(config);
+});
+
+ipcMain.handle('add-custom-ratio', (event, ratio, label) => {
+  const config = loadConfig();
+  config.customRatios.push({ ratio, label: label || ratio });
+  return saveConfig(config) ? config : null;
+});
+
+ipcMain.handle('remove-custom-ratio', (event, index) => {
+  const config = loadConfig();
+  if (index >= 0 && index < config.customRatios.length) {
+    config.customRatios.splice(index, 1);
+    return saveConfig(config) ? config : null;
+  }
+  return null;
+});
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -15,14 +68,14 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      enableRemoteModule: false
+      enableRemoteModule: false,
+      preload: path.join(__dirname, 'preload.js')
     },
     show: false
   });
 
   mainWindow.loadFile('src/index.html');
 
-  // Auto-resize window to content after loading
   mainWindow.webContents.once('did-finish-load', () => {
     mainWindow.webContents.executeJavaScript(`
       ({

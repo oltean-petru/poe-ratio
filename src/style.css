@@ -173,7 +173,7 @@ input[readonly]:focus {
   box-shadow: 0 5px 15px rgba(201, 170, 113, 0.4);
 }
 
-.quick-ratios {
+.custom-ratios {
   margin-top: 20px;
   padding: 15px;
   background: linear-gradient(145deg, #252525, #1a1a1a);
@@ -181,14 +181,101 @@ input[readonly]:focus {
   border-radius: 8px;
 }
 
-.quick-ratios-title {
+.custom-ratios-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.custom-ratios-title {
   color: #c9aa71;
   font-size: 0.9rem;
-  text-align: center;
-  margin-bottom: 12px;
   text-transform: uppercase;
   letter-spacing: 1px;
   font-weight: 600;
+  margin: 0;
+}
+
+.add-ratio-btn {
+  background: linear-gradient(145deg, #c9aa71, #b8994a);
+  color: #1a1a1a;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-app-region: no-drag;
+}
+
+.add-ratio-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(201, 170, 113, 0.4);
+}
+
+.add-ratio-form {
+  background: linear-gradient(145deg, #2a2a2a, #1f1f1f);
+  border: 1px solid #555;
+  border-radius: 6px;
+  padding: 12px;
+  margin-top: 10px;
+}
+
+.add-ratio-form input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 8px;
+  background: linear-gradient(145deg, #3a3a3a, #2a2a2a);
+  border: 1px solid #444;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 0.9rem;
+  -webkit-app-region: no-drag;
+}
+
+.add-ratio-form input:focus {
+  outline: none;
+  border-color: #c9aa71;
+}
+
+.form-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.save-btn, .cancel-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  -webkit-app-region: no-drag;
+}
+
+.save-btn {
+  background: linear-gradient(145deg, #4a7c59, #3a5e45);
+  color: #fff;
+}
+
+.save-btn:hover {
+  background: linear-gradient(145deg, #5a8c69, #4a6e55);
+}
+
+.cancel-btn {
+  background: linear-gradient(145deg, #7c4a4a, #5e3a3a);
+  color: #fff;
+}
+
+.cancel-btn:hover {
+  background: linear-gradient(145deg, #8c5a5a, #6e4a4a);
 }
 
 .ratio-grid {
@@ -209,6 +296,11 @@ input[readonly]:focus {
   text-align: center;
   font-weight: 500;
   -webkit-app-region: no-drag;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
 }
 
 .quick-ratio-btn:hover {
@@ -217,4 +309,26 @@ input[readonly]:focus {
   border-color: #c9aa71;
   transform: translateY(-1px);
   box-shadow: 0 3px 10px rgba(201, 170, 113, 0.3);
+}
+
+.quick-ratio-btn .delete-btn {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #d32f2f;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  font-size: 10px;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.quick-ratio-btn:hover .delete-btn {
+  display: flex;
 }
