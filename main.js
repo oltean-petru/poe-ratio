@@ -1,9 +1,10 @@
-const { app, BrowserWindow, globalShortcut, ipcMain } = require('electron');
+const { app, BrowserWindow, globalShortcut, ipcMain, Tray, Menu } = require('electron');
 const fs = require('fs');
 const path = require('path');
 
 let mainWindow;
 let addRatioWindow;
+let tray = null;
 let isVisible = false;
 const configPath = path.join(__dirname, 'config.json');
 
@@ -88,6 +89,7 @@ function createAddRatioWindow() {
     modal: true,
     resizable: false,
     transparent: false,
+    icon: path.join(__dirname, 'assets', 'divine_icon.ico'),
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -124,6 +126,7 @@ function createWindow() {
     skipTaskbar: true,
     resizable: false,
     transparent: true,
+    icon: path.join(__dirname, 'assets', 'divine_icon.ico'),
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -153,7 +156,7 @@ function createWindow() {
     mainWindow = null;
   });
 
-  globalShortcut.register('CommandOrControl+Shift+R', () => {
+  globalShortcut.register('CommandOrControl+R', () => {
     toggleOverlay();
   });
   mainWindow.setMovable(true);
@@ -170,8 +173,46 @@ function toggleOverlay() {
   }
 }
 
+function createTray() {
+  const iconPath = path.join(__dirname, 'assets', 'divine_icon.ico');
+  tray = new Tray(iconPath);
+
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: 'Show/Hide Overlay',
+      click: () => {
+        toggleOverlay();
+      }
+    },
+    {
+      label: 'Add Custom Ratio',
+      click: () => {
+        createAddRatioWindow();
+      }
+    },
+    {
+      type: 'separator'
+    },
+    {
+      label: 'Quit',
+      click: () => {
+        app.quit();
+      }
+    }
+  ]);
+
+  tray.setToolTip('POE Ratio Calculator');
+  tray.setContextMenu(contextMenu);
+  tray.on('double-click', () => {
+    toggleOverlay();
+  });
+}
+
 app.whenReady().then(() => {
+  app.setAppUserModelId('POE Ratio Calculator');
+
   createWindow();
+  createTray();
 
   setTimeout(() => {
     toggleOverlay();
@@ -179,9 +220,11 @@ app.whenReady().then(() => {
 });
 
 app.on('window-all-closed', () => {
-  // Keep app running even when window is closed for overlay functionality
-  // Uncomment the next line if you want the app to quit when window is closed
-  // app.quit();
+  // Keep app running even when all windows are closed for tray functionality
+  // On macOS, applications typically stay active until explicitly quit
+  if (process.platform !== 'darwin') {
+    // Don't quit on Windows/Linux - let the tray handle quitting
+  }
 });
 
 app.on('activate', () => {
@@ -192,6 +235,9 @@ app.on('activate', () => {
 
 app.on('will-quit', () => {
   globalShortcut.unregisterAll();
+  if (tray) {
+    tray.destroy();
+  }
 });
 
 app.on('web-contents-created', (event, contents) => {
