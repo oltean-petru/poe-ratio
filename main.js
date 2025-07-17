@@ -209,7 +209,9 @@ function createTray() {
 }
 
 app.whenReady().then(() => {
-  app.setAppUserModelId('POE Ratio Calculator');
+  if (process.platform === 'win32') {
+    app.setAppUserModelId('com.keknine.poe-ratio-calculator');
+  }
 
   createWindow();
   createTray();

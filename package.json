@@ -1,6 +1,6 @@
 {
-  "name": "poe-currency-calculator",
-  "version": "1.0.0",
+  "name": "poe-ratio-calculator",
+  "version": "1.0.1",
   "description": "Path of Exile Currency Exchange Calculator",
   "main": "main.js",
   "scripts": {
@@ -11,21 +11,25 @@
     "build-linux": "electron-builder --linux",
     "dist": "electron-builder --publish=never"
   },
-  "author": "Your Name",
+  "author": "KeK Nine",
   "license": "MIT",
   "devDependencies": {
     "electron": "^28.3.3",
     "electron-builder": "^24.9.1"
   },
   "build": {
-    "appId": "com.yourname.poe-currency-calculator",
-    "productName": "PoE Currency Calculator",
+    "appId": "com.keknine.poe-ratio-calculator",
+    "productName": "PoE Ratio Calculator",
     "directories": {
       "output": "dist"
     },
     "files": [
       "src/**/*",
+      "assets/**/*",
       "main.js",
+      "preload.js",
+      "add-ratio-preload.js",
+      "config.json",
       "package.json"
     ],
     "mac": {
@@ -34,7 +38,7 @@
     },
     "win": {
       "target": "nsis",
-      "icon": "assets/icon.ico"
+      "icon": "assets/divine_icon.ico"
     },
     "linux": {
       "target": "AppImage",
