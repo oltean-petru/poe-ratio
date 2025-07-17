@@ -209,8 +209,6 @@ function handleRightInputClick(inputElement) {
 }
 
 clearBtn.addEventListener('click', clearInputs);
-
-// Custom ratios management
 async function loadCustomRatios() {
     try {
         const config = await window.configAPI.loadConfig();
