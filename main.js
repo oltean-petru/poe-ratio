@@ -144,6 +144,11 @@ function createAddRatioWindow() {
     },
     show: false,
   });
+
+  addRatioWindow.on('show', () => {
+    addRatioWindow.setAlwaysOnTop(true, 'screen-saver');
+  });
+
   addRatioWindow.loadFile("src/add-ratio.html");
 
   addRatioWindow.webContents.once("did-finish-load", () => {
@@ -210,6 +215,16 @@ function createWindow() {
     mainWindow = null;
   });
 
+  mainWindow.on('blur', () => {
+    if (isVisible && mainWindow) {
+      mainWindow.setAlwaysOnTop(true, 'screen-saver');
+    }
+  });
+
+  mainWindow.on('show', () => {
+    mainWindow.setAlwaysOnTop(true, 'screen-saver');
+  });
+
   globalShortcut.register("CommandOrControl+R", () => {
     toggleOverlay();
   });
@@ -222,7 +237,7 @@ function toggleOverlay() {
     isVisible = false;
   } else {
     mainWindow.show();
-    mainWindow.focus();
+    mainWindow.setAlwaysOnTop(true, 'screen-saver');
     isVisible = true;
   }
 }
@@ -271,6 +286,13 @@ app.whenReady().then(() => {
 
   createWindow();
   createTray();
+
+  // idk it seems to help with always on top
+  setInterval(() => {
+    if (isVisible && mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.setAlwaysOnTop(true, 'screen-saver');
+    }
+  }, 1000);
 
   setTimeout(() => {
     toggleOverlay();
