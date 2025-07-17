@@ -33,7 +33,7 @@ A lightweight desktop overlay application for Path of Exile currency ratio calcu
 ### Global Shortcuts
 | Shortcut | Action |
 |----------|--------|
-| `Cmd/Ctrl + Shift + R` | Toggle overlay visibility |
+| `Cmd/Ctrl + R` | Toggle overlay visibility |
 
 ### Navigation
 | Key | Action |
@@ -154,6 +154,6 @@ Built apps will be output to the `dist/` folder with installers for the target p
 
 ## Troubleshooting
 
-- **Overlay not showing**: Press `Cmd/Ctrl + Shift + R` to toggle
+- **Overlay not showing**: Press `Cmd/Ctrl + R` to toggle
 - **Config not saving**: Check write permissions in app directory
 - **Ratios not loading**: Delete `config.json` to reset to defaults
