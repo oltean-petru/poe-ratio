@@ -4,5 +4,6 @@
       "ratio": "15:1",
       "label": "defalult"
     }
-  ]
+  ],
+  "hotkey": "CommandOrControl+Space"
 }

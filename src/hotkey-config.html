@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Configure Hotkey</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #2b2b2b;
+      color: #ffffff;
+      font-size: 14px;
+      user-select: none;
+    }
+
+    .container {
+      max-width: 300px;
+      margin: 0 auto;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #ffffff;
+      font-size: 18px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      color: #cccccc;
+      font-size: 12px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #555;
+      border-radius: 4px;
+      background: #333;
+      color: #ffffff;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: #4CAF50;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    button {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.2s;
+    }
+
+    .btn-primary {
+      background: #4CAF50;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #45a049;
+    }
+
+    .btn-secondary {
+      background: #555;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #666;
+    }
+
+    .help-text {
+      font-size: 11px;
+      color: #999;
+      margin-top: 5px;
+    }
+
+    .current-hotkey {
+      background: #444;
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .current-hotkey strong {
+      color: #4CAF50;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Configure Hotkey</h2>
+
+    <div class="current-hotkey">
+      Current hotkey: <strong id="current-hotkey">CommandOrControl+Space</strong>
+    </div>
+
+    <div class="form-group">
+      <label for="hotkey-input">New Hotkey:</label>
+      <input type="text" id="hotkey-input" placeholder="e.g., CommandOrControl+Space">
+      <div class="help-text">
+        Use modifiers: CommandOrControl, Alt, Shift, Control, Meta<br>
+        Examples: CommandOrControl+Space, Alt+R, Shift+F1
+      </div>
+    </div>
+
+    <div class="button-group">
+      <button class="btn-secondary" onclick="closeWindow()">Cancel</button>
+      <button class="btn-primary" onclick="saveHotkey()">Save</button>
+    </div>
+  </div>
+
+  <script>
+    let currentHotkey = 'CommandOrControl+Space';
+
+    window.electronAPI.loadConfig().then(config => {
+      currentHotkey = config.hotkey || 'CommandOrControl+Space';
+      document.getElementById('current-hotkey').textContent = currentHotkey;
+      document.getElementById('hotkey-input').value = currentHotkey;
+    });
+
+    function saveHotkey() {
+      const newHotkey = document.getElementById('hotkey-input').value.trim();
+
+      if (!newHotkey) {
+        alert('Please enter a hotkey');
+        return;
+      }
+
+      if (!newHotkey.includes('+') && !['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12'].includes(newHotkey)) {
+        alert('Please use a valid hotkey format (e.g., CommandOrControl+Space)');
+        return;
+      }
+
+      window.electronAPI.updateHotkey(newHotkey).then(result => {
+        if (result) {
+          closeWindow();
+        } else {
+          alert('Failed to update hotkey. Please try a different combination.');
+        }
+      });
+    }
+
+    function closeWindow() {
+      window.electronAPI.closeHotkeyConfigWindow();
+    }
+
+    document.getElementById('hotkey-input').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        saveHotkey();
+      }
+    });
+  </script>
+</body>
+</html>

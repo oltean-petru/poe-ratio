@@ -11,6 +11,7 @@ const path = require("path");
 
 let mainWindow;
 let addRatioWindow;
+let hotkeyConfigWindow;
 let tray = null;
 let isVisible = false;
 
@@ -28,11 +29,17 @@ function migrateConfigIfNeeded() {
     try {
       console.log('Migrating config from old location to userData directory');
       const oldData = fs.readFileSync(oldConfigPath, 'utf8');
+      const oldConfig = JSON.parse(oldData);
+
+      if (!oldConfig.hotkey) {
+        oldConfig.hotkey = defaultConfig.hotkey;
+      }
+
       const userDataDir = path.dirname(newConfigPath);
       if (!fs.existsSync(userDataDir)) {
         fs.mkdirSync(userDataDir, { recursive: true });
       }
-      fs.writeFileSync(newConfigPath, oldData);
+      fs.writeFileSync(newConfigPath, JSON.stringify(oldConfig, null, 2));
       console.log('Config migration completed');
     } catch (error) {
       console.error('Error migrating config:', error);
@@ -45,6 +52,12 @@ const defaultRatios = [
   { ratio: "4:1", label: "4:1" },
   { ratio: "5:1", label: "5:1" },
 ];
+
+const defaultConfig = {
+  customRatios: defaultRatios,
+  hotkey: "CommandOrControl+Space"
+};
+
 function loadConfig() {
   try {
     const configPath = getConfigPath();
@@ -52,7 +65,8 @@ function loadConfig() {
     if (fs.existsSync(configPath)) {
       const data = fs.readFileSync(configPath, 'utf8');
       const config = JSON.parse(data);
-      console.log('Config loaded successfully:', config);
+      if (!config.customRatios) config.customRatios = defaultRatios;
+      if (!config.hotkey) config.hotkey = defaultConfig.hotkey;
       return config;
     } else {
       console.log('Config file does not exist, using defaults');
@@ -60,7 +74,7 @@ function loadConfig() {
   } catch (error) {
     console.log('Error loading config, using defaults:', error);
   }
-  return { customRatios: defaultRatios };
+  return { ...defaultConfig };
 }
 
 function saveConfig(config) {
@@ -110,6 +124,32 @@ ipcMain.handle("remove-custom-ratio", (event, index) => {
   return null;
 });
 
+ipcMain.handle("update-hotkey", (event, newHotkey) => {
+  const config = loadConfig();
+  const oldHotkey = config.hotkey;
+  config.hotkey = newHotkey;
+
+  if (saveConfig(config)) {
+    if (oldHotkey) {
+      globalShortcut.unregister(oldHotkey);
+    }
+    registerHotkey(newHotkey);
+    return config;
+  }
+  return null;
+});
+
+function registerHotkey(hotkey) {
+  try {
+    globalShortcut.register(hotkey, () => {
+      toggleOverlay();
+    });
+    console.log(`Registered hotkey: ${hotkey}`);
+  } catch (error) {
+    console.error(`Failed to register hotkey ${hotkey}:`, error);
+  }
+}
+
 ipcMain.handle("open-add-ratio-window", () => {
   createAddRatioWindow();
 });
@@ -117,6 +157,16 @@ ipcMain.handle("open-add-ratio-window", () => {
 ipcMain.handle("close-add-ratio-window", () => {
   if (addRatioWindow) {
     addRatioWindow.close();
+  }
+});
+
+ipcMain.handle("open-hotkey-config-window", () => {
+  createHotkeyConfigWindow();
+});
+
+ipcMain.handle("close-hotkey-config-window", () => {
+  if (hotkeyConfigWindow) {
+    hotkeyConfigWindow.close();
   }
 });
 
@@ -173,6 +223,59 @@ function createAddRatioWindow() {
   });
 }
 
+function createHotkeyConfigWindow() {
+  if (hotkeyConfigWindow) {
+    hotkeyConfigWindow.focus();
+    return;
+  }
+
+  hotkeyConfigWindow = new BrowserWindow({
+    width: 350,
+    height: 300,
+    frame: false,
+    alwaysOnTop: true,
+    parent: mainWindow,
+    modal: true,
+    resizable: false,
+    transparent: false,
+    icon: path.join(__dirname, "assets", "divine_icon.ico"),
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      enableRemoteModule: false,
+      preload: path.join(__dirname, "hotkey-config-preload.js"),
+    },
+    show: false,
+  });
+
+  hotkeyConfigWindow.on('show', () => {
+    hotkeyConfigWindow.setAlwaysOnTop(true, 'screen-saver');
+  });
+
+  hotkeyConfigWindow.loadFile("src/hotkey-config.html");
+
+  hotkeyConfigWindow.webContents.once("did-finish-load", () => {
+    hotkeyConfigWindow.webContents
+      .executeJavaScript(
+        `
+      ({
+        width: document.body.scrollWidth,
+        height: document.body.scrollHeight
+      })
+    `
+      )
+      .then((size) => {
+        hotkeyConfigWindow.setSize(size.width + 20, size.height + 10);
+        hotkeyConfigWindow.center();
+        hotkeyConfigWindow.show();
+      });
+  });
+
+  hotkeyConfigWindow.on("closed", () => {
+    hotkeyConfigWindow = null;
+  });
+}
+
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 700,
@@ -225,9 +328,9 @@ function createWindow() {
     mainWindow.setAlwaysOnTop(true, 'screen-saver');
   });
 
-  globalShortcut.register("CommandOrControl+R", () => {
-    toggleOverlay();
-  });
+  const config = loadConfig();
+  registerHotkey(config.hotkey);
+
   mainWindow.setMovable(true);
 }
 
@@ -260,6 +363,12 @@ function createTray() {
       },
     },
     {
+      label: "Configure Hotkey",
+      click: () => {
+        createHotkeyConfigWindow();
+      },
+    },
+    {
       type: "separator",
     },
     {
@@ -287,7 +396,6 @@ app.whenReady().then(() => {
   createWindow();
   createTray();
 
-  // idk it seems to help with always on top
   setInterval(() => {
     if (isVisible && mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.setAlwaysOnTop(true, 'screen-saver');

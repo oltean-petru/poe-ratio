@@ -33,7 +33,7 @@ A lightweight desktop overlay application for Path of Exile currency ratio calcu
 ### Global Shortcuts
 | Shortcut | Action |
 |----------|--------|
-| `Cmd/Ctrl + Shift + R` | Toggle overlay visibility |
+| `Cmd/Ctrl + Space` | Toggle overlay visibility (configurable) |
 
 ### Navigation
 | Key | Action |
@@ -46,6 +46,11 @@ A lightweight desktop overlay application for Path of Exile currency ratio calcu
 |-----|--------|
 | `Enter` | Navigate: Ratio → Label → Submit |
 | `Escape` | Close modal |
+
+### Hotkey Configuration
+- **Right-click tray icon** → **Configure Hotkey** to change the global shortcut
+- Supports various modifier combinations (Ctrl, Alt, Shift, etc.)
+- Examples: `CommandOrControl+Space`, `Alt+R`, `Shift+F1`
 
 ### Mouse Controls
 | Action | Function |
@@ -98,6 +103,13 @@ npm run build-linux  # Linux
 5. Ratio appears in the main window
 6. Hover over any ratio and click **×** to delete
 
+### Tray Menu Options
+Right-click the tray icon to access:
+- **Show/Hide Overlay**: Toggle overlay visibility
+- **Add Custom Ratio**: Open the add ratio modal
+- **Configure Hotkey**: Change the global shortcut key
+- **Quit**: Exit the application
+
 ## File Structure
 
 ```
@@ -108,12 +120,14 @@ poe-ratio/
 │   ├── script.js               # Main window logic
 │   ├── add-ratio.html          # Add ratio modal HTML
 │   ├── add-ratio.css           # Add ratio modal styles
-│   └── add-ratio.js            # Add ratio modal logic
+│   ├── add-ratio.js            # Add ratio modal logic
+│   └── hotkey-config.html      # Hotkey configuration modal HTML
 ├── assets/
-│   └── (place icons here)     # App icons
+│   └── (place icons here)      # App icons
 ├── main.js                     # Electron main process
 ├── preload.js                  # Main window preload script
 ├── add-ratio-preload.js        # Add ratio modal preload script
+├── hotkey-config-preload.js    # Hotkey configuration preload script
 ├── config.json                 # User configuration (auto-generated)
 ├── package.json                # Dependencies and scripts
 └── README.md                   # This file
@@ -121,16 +135,23 @@ poe-ratio/
 
 ## Configuration
 
-The app automatically creates a `config.json` file to store your custom ratios:
+The app automatically creates a `config.json` file to store your custom ratios and hotkey preferences:
 
 ```json
 {
   "customRatios": [
     { "ratio": "15:1", "label": "15:1" },
     { "ratio": "127:1", "label": "Chaos to Divine" }
-  ]
+  ],
+  "hotkey": "CommandOrControl+Space"
 }
 ```
+
+### Hotkey Configuration
+- Access via right-click tray icon → "Configure Hotkey"
+- Supports various modifier combinations
+- Examples: `CommandOrControl+Space`, `Alt+R`, `Shift+F1`, `F12`
+- Changes are saved automatically and take effect immediately
 
 ## Adding Icons
 
@@ -154,6 +175,8 @@ Built apps will be output to the `dist/` folder with installers for the target p
 
 ## Troubleshooting
 
-- **Overlay not showing**: Press `Cmd/Ctrl + Shift + R` to toggle
+- **Overlay not showing**: Press `Cmd/Ctrl + Space` (or your configured hotkey) to toggle
 - **Config not saving**: Check write permissions in app directory
 - **Ratios not loading**: Delete `config.json` to reset to defaults
+- **Hotkey not working**: Try a different key combination in the hotkey configuration
+- **Hotkey conflicts**: Some combinations may be reserved by the system or other applications
