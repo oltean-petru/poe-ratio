@@ -29,6 +29,7 @@
       "main.js",
       "preload.js",
       "add-ratio-preload.js",
+      "hotkey-config-preload.js",
       "config.json",
       "package.json"
     ],
