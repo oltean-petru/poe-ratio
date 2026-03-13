@@ -79,7 +79,7 @@ function start() {
       windowManager.keepOverlayOnTop();
     }, 1000);
 
-    windowManager.showLaunchPopup();
+    windowManager.showLaunchPopup(config.hotkey);
   });
 
   app.on("window-all-closed", () => {

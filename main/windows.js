@@ -41,6 +41,38 @@ function createWindowManager({ baseDir }) {
   let tray;
   let isVisible = false;
 
+  function formatHotkeyForDisplay(hotkey) {
+    if (!hotkey) {
+      return "Ctrl + Space";
+    }
+
+    const commandOrControlLabel = process.platform === "darwin" ? "Cmd" : "Ctrl";
+    const tokenMap = {
+      commandorcontrol: commandOrControlLabel,
+      cmdorctrl: commandOrControlLabel,
+      command: "Cmd",
+      control: "Ctrl",
+      ctrl: "Ctrl",
+      alt: "Alt",
+      option: "Alt",
+      shift: "Shift",
+      meta: process.platform === "darwin" ? "Cmd" : "Win",
+      super: process.platform === "darwin" ? "Cmd" : "Win",
+      space: "Space",
+      plus: "+",
+    };
+
+    return hotkey
+      .split("+")
+      .map((part) => part.trim())
+      .filter(Boolean)
+      .map((part) => {
+        const mapped = tokenMap[part.toLowerCase()];
+        return mapped || part.toUpperCase();
+      })
+      .join(" + ");
+  }
+
   function createMainWindow() {
     if (mainWindow && !mainWindow.isDestroyed()) {
       return mainWindow;
@@ -235,7 +267,7 @@ function createWindowManager({ baseDir }) {
     return tray;
   }
 
-  function showLaunchPopup() {
+  function showLaunchPopup(hotkey = "CommandOrControl+Space") {
     if (launchPopupWindow && !launchPopupWindow.isDestroyed()) {
       return;
     }
@@ -271,7 +303,11 @@ function createWindowManager({ baseDir }) {
 
     launchPopupWindow.setAlwaysOnTop(true, "screen-saver");
     launchPopupWindow.setIgnoreMouseEvents(true);
-    launchPopupWindow.loadFile(path.join(htmlDir, "launch-popup.html"));
+    launchPopupWindow.loadFile(path.join(htmlDir, "launch-popup.html"), {
+      query: {
+        hotkey: formatHotkeyForDisplay(hotkey),
+      },
+    });
 
     launchPopupWindow.once("ready-to-show", () => {
       if (!launchPopupWindow || launchPopupWindow.isDestroyed()) {
