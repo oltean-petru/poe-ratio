@@ -1,10 +1,11 @@
-const { contextBridge, ipcRenderer } = require('electron');
+const { contextBridge, ipcRenderer } = require("electron");
 
-contextBridge.exposeInMainWorld('configAPI', {
-  loadConfig: () => ipcRenderer.invoke('load-config'),
-  saveConfig: (config) => ipcRenderer.invoke('save-config', config),
-  addCustomRatio: (ratio, label) => ipcRenderer.invoke('add-custom-ratio', ratio, label),
-  removeCustomRatio: (index) => ipcRenderer.invoke('remove-custom-ratio', index),
-  openAddRatioWindow: () => ipcRenderer.invoke('open-add-ratio-window'),
-  onRatiosUpdated: (callback) => ipcRenderer.on('ratios-updated', callback)
+contextBridge.exposeInMainWorld("configAPI", {
+	addCustomRatio: (ratio, label) => ipcRenderer.invoke("add-custom-ratio", ratio, label),
+	loadConfig: () => ipcRenderer.invoke("load-config"),
+	onRatiosUpdated: (callback) => ipcRenderer.on("ratios-updated", callback),
+	openAddRatioWindow: () => ipcRenderer.invoke("open-add-ratio-window"),
+	removeCustomRatio: (index) => ipcRenderer.invoke("remove-custom-ratio", index),
+	resizeOverlayToContent: () => ipcRenderer.invoke("resize-overlay-to-content"),
+	saveConfig: (config) => ipcRenderer.invoke("save-config", config),
 });
