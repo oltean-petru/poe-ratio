@@ -15,12 +15,13 @@
     </div>
 
     <div class="form-group">
-      <label for="hotkey-input">New Hotkey:</label>
-      <input type="text" id="hotkey-input" placeholder="e.g., CommandOrControl+Space">
-      <div class="help-text">
-        Use modifiers: CommandOrControl, Alt, Shift, Control, Meta<br>
-        Examples: CommandOrControl+Space, Alt+R, Shift+F1
+      <label>New Hotkey:</label>
+      <div class="hotkey-recorder" id="hotkeyRecorder" tabindex="0">
+        <span class="recorder-idle" id="recorderIdle">Click to record</span>
+        <span class="recorder-listening" id="recorderListening" style="display:none">Press key combination...</span>
+        <div class="recorder-keys" id="recorderKeys" style="display:none"></div>
       </div>
+      <div class="help-text">Click the box and press your desired key combination</div>
     </div>
 
     <div class="button-group">
