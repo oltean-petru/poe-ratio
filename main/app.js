@@ -59,7 +59,14 @@ function start() {
     migrateConfigIfNeeded();
 
     const baseDir = path.join(__dirname, "..");
-    windowManager = createWindowManager({ baseDir });
+    windowManager = createWindowManager({
+      baseDir,
+      onOverlayMoved: (position) => {
+        const config = loadConfig();
+        config.overlayPosition = position;
+        saveConfig(config);
+      },
+    });
 
     registerIpcHandlers({
       ipcMain,
@@ -69,10 +76,10 @@ function start() {
       windowManager,
     });
 
-    windowManager.createMainWindow();
-    windowManager.createTray();
-
     const config = loadConfig();
+
+    windowManager.createMainWindow(config.overlayPosition);
+    windowManager.createTray();
     registerHotkey(config.hotkey);
 
     keepOnTopInterval = setInterval(() => {

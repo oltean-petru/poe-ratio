@@ -2,7 +2,12 @@ const { BrowserWindow, Menu, Tray, screen } = require("electron");
 const path = require("path");
 
 function sizeWindowToContent(window, options = {}) {
-  const { widthPadding = 20, heightPadding = 0, showAfterResize = false } = options;
+  const {
+    widthPadding = 20,
+    heightPadding = 0,
+    showAfterResize = false,
+    centerAfterResize = true,
+  } = options;
 
   window.webContents.once("did-finish-load", () => {
     window.webContents
@@ -15,7 +20,9 @@ function sizeWindowToContent(window, options = {}) {
         }
 
         window.setSize(size.width + widthPadding, size.height + heightPadding);
-        window.center();
+        if (centerAfterResize) {
+          window.center();
+        }
 
         if (showAfterResize) {
           window.show();
@@ -30,7 +37,7 @@ function sizeWindowToContent(window, options = {}) {
   });
 }
 
-function createWindowManager({ baseDir }) {
+function createWindowManager({ baseDir, onOverlayMoved }) {
   const iconPath = path.join(baseDir, "assets", "divine_icon.ico");
   const htmlDir = path.join(baseDir, "src");
 
@@ -40,6 +47,18 @@ function createWindowManager({ baseDir }) {
   let launchPopupWindow;
   let tray;
   let isVisible = false;
+  let moveSaveTimeout;
+
+  function isPositionOnAnyDisplay(position) {
+    if (!position || !Number.isFinite(position.x) || !Number.isFinite(position.y)) {
+      return false;
+    }
+
+    return screen.getAllDisplays().some((display) => {
+      const { x, y, width, height } = display.workArea;
+      return position.x >= x && position.x < x + width && position.y >= y && position.y < y + height;
+    });
+  }
 
   function formatHotkeyForDisplay(hotkey) {
     if (!hotkey) {
@@ -73,10 +92,12 @@ function createWindowManager({ baseDir }) {
       .join(" + ");
   }
 
-  function createMainWindow() {
+  function createMainWindow(overlayPosition = null) {
     if (mainWindow && !mainWindow.isDestroyed()) {
       return mainWindow;
     }
+
+    const hasStoredPosition = isPositionOnAnyDisplay(overlayPosition);
 
     mainWindow = new BrowserWindow({
       width: 700,
@@ -93,15 +114,42 @@ function createWindowManager({ baseDir }) {
         enableRemoteModule: false,
         preload: path.join(baseDir, "preload.js"),
       },
+      ...(hasStoredPosition
+        ? {
+            x: overlayPosition.x,
+            y: overlayPosition.y,
+          }
+        : {}),
       show: false,
     });
 
     mainWindow.loadFile(path.join(htmlDir, "index.html"));
-    sizeWindowToContent(mainWindow);
-    mainWindow.center();
+    sizeWindowToContent(mainWindow, {
+      centerAfterResize: !hasStoredPosition,
+    });
     mainWindow.setMovable(true);
 
+    mainWindow.on("move", () => {
+      if (moveSaveTimeout) {
+        clearTimeout(moveSaveTimeout);
+      }
+
+      moveSaveTimeout = setTimeout(() => {
+        if (!mainWindow || mainWindow.isDestroyed() || typeof onOverlayMoved !== "function") {
+          return;
+        }
+
+        const [x, y] = mainWindow.getPosition();
+        onOverlayMoved({ x, y });
+      }, 200);
+    });
+
     mainWindow.on("closed", () => {
+      if (moveSaveTimeout) {
+        clearTimeout(moveSaveTimeout);
+        moveSaveTimeout = null;
+      }
+
       mainWindow = null;
       isVisible = false;
     });

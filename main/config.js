@@ -11,7 +11,24 @@ const defaultRatios = [
 const defaultConfig = {
   customRatios: defaultRatios,
   hotkey: "CommandOrControl+Space",
+  overlayPosition: null,
 };
+
+function normalizeOverlayPosition(position) {
+  if (!position || typeof position !== "object") {
+    return null;
+  }
+
+  const { x, y } = position;
+  if (!Number.isFinite(x) || !Number.isFinite(y)) {
+    return null;
+  }
+
+  return {
+    x: Math.round(x),
+    y: Math.round(y),
+  };
+}
 
 function getConfigPath() {
   return path.join(app.getPath("userData"), "config.json");
@@ -30,6 +47,7 @@ function migrateConfigIfNeeded() {
         ...oldConfig,
         customRatios: oldConfig.customRatios || defaultRatios,
         hotkey: oldConfig.hotkey || defaultConfig.hotkey,
+        overlayPosition: normalizeOverlayPosition(oldConfig.overlayPosition),
       };
 
       fs.mkdirSync(path.dirname(newConfigPath), { recursive: true });
@@ -55,6 +73,7 @@ function loadConfig() {
       ...config,
       customRatios: config.customRatios || defaultRatios,
       hotkey: config.hotkey || defaultConfig.hotkey,
+      overlayPosition: normalizeOverlayPosition(config.overlayPosition),
     };
   } catch (error) {
     console.error("Error loading config, using defaults:", error);
@@ -80,5 +99,6 @@ module.exports = {
   getConfigPath,
   loadConfig,
   migrateConfigIfNeeded,
+  normalizeOverlayPosition,
   saveConfig,
 };
