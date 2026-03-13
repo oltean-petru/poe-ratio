@@ -54,6 +54,10 @@ function registerIpcHandlers({ ipcMain, loadConfig, saveConfig, updateHotkey, wi
     windowManager.createAddRatioWindow();
   });
 
+  ipcMain.handle("resize-overlay-to-content", () => {
+    return windowManager.resizeMainWindowToContent();
+  });
+
   ipcMain.handle("close-add-ratio-window", () => {
     windowManager.closeAddRatioWindow();
   });

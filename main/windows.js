@@ -268,6 +268,51 @@ function createWindowManager({ baseDir, onOverlayMoved }) {
     }
   }
 
+  function resizeMainWindowToContent() {
+    if (!mainWindow || mainWindow.isDestroyed()) {
+      return false;
+    }
+
+    const [currentWidth, currentHeight] = mainWindow.getSize();
+
+    return mainWindow.webContents
+      .executeJavaScript(
+        `(() => {
+          const container = document.querySelector(".container");
+          if (!container) {
+            return null;
+          }
+
+          const bodyStyles = window.getComputedStyle(document.body);
+          const paddingTop = Number.parseFloat(bodyStyles.paddingTop) || 0;
+          const paddingBottom = Number.parseFloat(bodyStyles.paddingBottom) || 0;
+          const containerHeight = container.getBoundingClientRect().height;
+
+          return Math.ceil(containerHeight + paddingTop + paddingBottom);
+        })()`
+      )
+      .then((targetHeight) => {
+        if (!mainWindow || mainWindow.isDestroyed()) {
+          return false;
+        }
+
+        if (!Number.isFinite(targetHeight)) {
+          return false;
+        }
+
+        const nextHeight = Math.max(120, targetHeight);
+        if (nextHeight !== currentHeight) {
+          mainWindow.setSize(currentWidth, nextHeight);
+        }
+
+        return true;
+      })
+      .catch((error) => {
+        console.error("Failed to resize main window to content:", error);
+        return false;
+      });
+  }
+
   function createTray() {
     if (tray && !tray.isDestroyed()) {
       return tray;
@@ -417,6 +462,7 @@ function createWindowManager({ baseDir, onOverlayMoved }) {
     destroyTray,
     getMainWindow,
     keepOverlayOnTop,
+    resizeMainWindowToContent,
     showLaunchPopup,
     toggleOverlay,
   };

@@ -12,7 +12,18 @@ const defaultConfig = {
   customRatios: defaultRatios,
   hotkey: "CommandOrControl+Space",
   overlayPosition: null,
+  ratioHistory: [],
 };
+
+function normalizeRatioHistory(history) {
+  if (!Array.isArray(history)) {
+    return [];
+  }
+
+  return history
+    .filter((entry) => typeof entry === "string" && /^\d+(\.\d+)?:\d+(\.\d+)?$/.test(entry))
+    .slice(0, 10);
+}
 
 function normalizeOverlayPosition(position) {
   if (!position || typeof position !== "object") {
@@ -48,6 +59,7 @@ function migrateConfigIfNeeded() {
         customRatios: oldConfig.customRatios || defaultRatios,
         hotkey: oldConfig.hotkey || defaultConfig.hotkey,
         overlayPosition: normalizeOverlayPosition(oldConfig.overlayPosition),
+        ratioHistory: normalizeRatioHistory(oldConfig.ratioHistory),
       };
 
       fs.mkdirSync(path.dirname(newConfigPath), { recursive: true });
@@ -74,6 +86,7 @@ function loadConfig() {
       customRatios: config.customRatios || defaultRatios,
       hotkey: config.hotkey || defaultConfig.hotkey,
       overlayPosition: normalizeOverlayPosition(config.overlayPosition),
+      ratioHistory: normalizeRatioHistory(config.ratioHistory),
     };
   } catch (error) {
     console.error("Error loading config, using defaults:", error);

@@ -31,8 +31,8 @@
       "main.js",
       "preload.js",
       "add-ratio-preload.js",
-      "config.json",
       "hotkey-config-preload.js",
+      "config.json",
       "package.json"
     ],
     "mac": {

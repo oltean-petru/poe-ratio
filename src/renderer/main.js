@@ -5,7 +5,9 @@ const rightNum2 = document.getElementById("rightNum2");
 const ratioDisplay = document.getElementById("ratioDisplay");
 const clearBtn = document.getElementById("clearBtn");
 const addRatioBtn = document.getElementById("addRatioBtn");
+const clearHistoryBtn = document.getElementById("clearHistoryBtn");
 const ratioGrid = document.getElementById("ratioGrid");
+const historyGrid = document.getElementById("historyGrid");
 
 const fallbackRatios = [
   { ratio: "3:1", label: "3:1" },
@@ -14,6 +16,24 @@ const fallbackRatios = [
 ];
 
 let isUpdating = false;
+const maxHistoryEntries = 10;
+let resizeOverlayTimeout;
+
+function scheduleOverlayResize() {
+  if (resizeOverlayTimeout) {
+    clearTimeout(resizeOverlayTimeout);
+  }
+
+  resizeOverlayTimeout = setTimeout(() => {
+    if (!window.configAPI?.resizeOverlayToContent) {
+      return;
+    }
+
+    window.configAPI.resizeOverlayToContent().catch((error) => {
+      console.error("Failed to resize overlay:", error);
+    });
+  }, 80);
+}
 
 function simplifyRatio(num1, num2) {
   if (num1 <= 0 || num2 <= 0) {
@@ -170,9 +190,25 @@ function handleRightInputClick(inputElement) {
     return;
   }
 
-  copyToClipboard(inputElement.value).catch((error) => {
-    console.error("Failed to copy to clipboard:", error);
-  });
+  copyToClipboard(inputElement.value)
+    .then(() => {
+      const amountText = getCurrentCurrencyAmount();
+      if (amountText) {
+        addRatioToHistory(amountText);
+      }
+    })
+    .catch((error) => {
+      console.error("Failed to copy to clipboard:", error);
+    });
+}
+
+function getCurrentCurrencyAmount() {
+  if (!leftNum1.value || !leftNum2.value) {
+    return null;
+  }
+
+  const amount = `${leftNum1.value}:${leftNum2.value}`;
+  return /^\d+(\.\d+)?:\d+(\.\d+)?$/.test(amount) ? amount : null;
 }
 
 function applyRatio(ratio) {
@@ -205,15 +241,77 @@ function createRatioButton(ratioData, index) {
 
 function renderCustomRatios(ratios) {
   ratioGrid.replaceChildren(...ratios.map(createRatioButton));
+  scheduleOverlayResize();
+}
+
+function createHistoryRatioButton(ratio) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "history-ratio-btn";
+  button.dataset.ratio = ratio;
+  button.textContent = ratio;
+  return button;
+}
+
+function renderRatioHistory(history) {
+  const ratios = Array.isArray(history) ? history : [];
+  clearHistoryBtn.disabled = ratios.length === 0;
+
+  if (ratios.length === 0) {
+    const emptyState = document.createElement("span");
+    emptyState.className = "history-empty";
+    emptyState.textContent = "No copied amounts yet.";
+    historyGrid.replaceChildren(emptyState);
+    scheduleOverlayResize();
+    return;
+  }
+
+  historyGrid.replaceChildren(...ratios.map(createHistoryRatioButton));
+  scheduleOverlayResize();
+}
+
+async function clearRatioHistory() {
+  try {
+    const config = await window.configAPI.loadConfig();
+    config.ratioHistory = [];
+
+    const saveSucceeded = await window.configAPI.saveConfig(config);
+    if (saveSucceeded) {
+      renderRatioHistory([]);
+    }
+  } catch (error) {
+    console.error("Error clearing ratio history:", error);
+  }
+}
+
+async function addRatioToHistory(ratio) {
+  try {
+    const config = await window.configAPI.loadConfig();
+    const existingHistory = Array.isArray(config.ratioHistory) ? config.ratioHistory : [];
+    const nextHistory = [ratio, ...existingHistory.filter((entry) => entry !== ratio)].slice(
+      0,
+      maxHistoryEntries
+    );
+
+    config.ratioHistory = nextHistory;
+    const saveSucceeded = await window.configAPI.saveConfig(config);
+    if (saveSucceeded) {
+      renderRatioHistory(nextHistory);
+    }
+  } catch (error) {
+    console.error("Error saving ratio history:", error);
+  }
 }
 
 async function loadCustomRatios() {
   try {
     const config = await window.configAPI.loadConfig();
     renderCustomRatios(config.customRatios);
+    renderRatioHistory(config.ratioHistory);
   } catch (error) {
     console.error("Error loading custom ratios:", error);
     renderCustomRatios(fallbackRatios);
+    renderRatioHistory([]);
   }
 }
 
@@ -232,6 +330,7 @@ clearBtn.addEventListener("click", clearInputs);
 addRatioBtn.addEventListener("click", () => {
   window.configAPI.openAddRatioWindow();
 });
+clearHistoryBtn.addEventListener("click", clearRatioHistory);
 
 ratioGrid.addEventListener("click", (event) => {
   const deleteBadge = event.target.closest(".delete-btn");
@@ -243,6 +342,13 @@ ratioGrid.addEventListener("click", (event) => {
   const ratioButton = event.target.closest(".quick-ratio-btn");
   if (ratioButton) {
     applyRatio(ratioButton.dataset.ratio);
+  }
+});
+
+historyGrid.addEventListener("click", (event) => {
+  const historyButton = event.target.closest(".history-ratio-btn");
+  if (historyButton) {
+    applyRatio(historyButton.dataset.ratio);
   }
 });
 
@@ -300,4 +406,5 @@ leftNum2.addEventListener("keypress", (event) => {
 window.addEventListener("load", () => {
   leftNum1.focus();
   loadCustomRatios();
+  scheduleOverlayResize();
 });
