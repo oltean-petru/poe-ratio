@@ -250,6 +250,12 @@ function createWindowManager({ baseDir, onOverlayMoved }) {
     return hotkeyConfigWindow;
   }
 
+  function openConfigFileInExplorer() {
+    const { app, shell } = require("electron");
+    const configPath = path.join(app.getPath("userData"), "config.json");
+    shell.showItemInFolder(configPath);
+  }
+
   function toggleOverlay() {
     const window = createMainWindow();
 
@@ -337,6 +343,12 @@ function createWindowManager({ baseDir, onOverlayMoved }) {
         label: "Configure Hotkey",
         click: () => {
           createHotkeyConfigWindow();
+        },
+      },
+      {
+        label: "Open config file",
+        click: () => {
+          openConfigFileInExplorer();
         },
       },
       {
