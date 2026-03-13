@@ -114,20 +114,33 @@ Right-click the tray icon to access:
 
 ```
 poe-ratio/
+├── main/
+│   ├── app.js                 # Electron lifecycle bootstrap
+│   ├── config.js              # Persistent config storage and migration
+│   ├── ipc.js                 # IPC handler registration
+│   └── windows.js             # Window, tray, and popup management
+├── preload/
+│   ├── main.js                # Main window preload API
+│   ├── add-ratio.js           # Add ratio modal preload API
+│   └── hotkey-config.js       # Hotkey modal preload API
 ├── src/
 │   ├── index.html              # Main window HTML
 │   ├── style.css               # Main window styles
-│   ├── script.js               # Main window logic
 │   ├── add-ratio.html          # Add ratio modal HTML
 │   ├── add-ratio.css           # Add ratio modal styles
-│   ├── add-ratio.js            # Add ratio modal logic
-│   └── hotkey-config.html      # Hotkey configuration modal HTML
+│   ├── hotkey-config.html      # Hotkey configuration modal HTML
+│   ├── hotkey-config.css       # Hotkey configuration modal styles
+│   ├── launch-popup.html       # Startup popup window
+│   └── renderer/
+│       ├── main.js             # Main window renderer logic
+│       ├── add-ratio.js        # Add ratio modal renderer logic
+│       └── hotkey-config.js    # Hotkey configuration renderer logic
 ├── assets/
 │   └── (place icons here)      # App icons
-├── main.js                     # Electron main process
-├── preload.js                  # Main window preload script
-├── add-ratio-preload.js        # Add ratio modal preload script
-├── hotkey-config-preload.js    # Hotkey configuration preload script
+├── main.js                     # Root Electron bootstrap
+├── preload.js                  # Root preload bootstrap for main window
+├── add-ratio-preload.js        # Root preload bootstrap for add ratio modal
+├── hotkey-config-preload.js    # Root preload bootstrap for hotkey modal
 ├── config.json                 # User configuration (auto-generated)
 ├── package.json                # Dependencies and scripts
 └── README.md                   # This file
